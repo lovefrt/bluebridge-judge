@@ -1,0 +1,17 @@
+{
+  "name": "2026 春季 C++ 阶段测验（样例）",
+  "problems_dir": "problems",
+  "submissions": [
+    { "student": "张三", "problem": "p1001", "file": "submissions/zhangsan_p1001.cpp" },
+    { "student": "张三", "problem": "p1002", "file": "submissions/zhangsan_p1002.txt" },
+    { "student": "张三", "problem": "p1003", "file": "submissions/zhangsan_p1003.cpp" },
+    { "student": "李四", "problem": "p1001", "file": "submissions/lisi_p1001.cpp" },
+    { "student": "李四", "problem": "p1002", "file": "submissions/lisi_p1002.txt" },
+    { "student": "王五", "problem": "p1001", "file": "submissions/wangwu_p1001.cpp" },
+    { "student": "王五", "problem": "p1003", "file": "submissions/wangwu_p1003.cpp" },
+    { "student": "赵六", "problem": "p1001", "file": "submissions/zhaoliu_p1001.cpp" },
+    { "student": "赵六", "problem": "p1002", "file": "submissions/zhaoliu_p1002.txt" },
+    { "student": "孙七", "problem": "p1001", "file": "submissions/sunqi_p1001.cpp" },
+    { "student": "周八", "problem": "p1003", "file": "submissions/zhouba_p1003.cpp" }
+  ]
+}

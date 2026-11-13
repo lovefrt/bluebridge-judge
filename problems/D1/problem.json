@@ -1,0 +1,44 @@
+{
+  "id": "D1",
+  "title": "爱神的箭回复",
+  "type": "program",
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 256,
+  "score": 40.0,
+  "comparator": "token",
+  "tests": [
+    {
+      "name": "11",
+      "input": "tests/case_01.in",
+      "answer": "tests/case_01.out",
+      "score": 10.0
+    },
+    {
+      "name": "测试点 2",
+      "input": "tests/case_02.in",
+      "answer": "tests/case_02.out",
+      "score": 10.0
+    },
+    {
+      "name": "12",
+      "input": "tests/case_03.in",
+      "answer": "tests/case_03.out",
+      "score": 10.0
+    },
+    {
+      "name": "2",
+      "input": "tests/case_04.in",
+      "answer": "tests/case_04.out",
+      "score": 10.0
+    }
+  ],
+  "description": "asfadgdgdsga",
+  "input_description": "阿斯弗傻瓜",
+  "output_description": "萨格噶尔我",
+  "samples": [
+    {
+      "input": "1问题",
+      "output": "Sega"
+    }
+  ]
+}

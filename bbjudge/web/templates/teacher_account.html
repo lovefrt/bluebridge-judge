@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}账号详情 · {{ student.real_name }} · {{ brand }}{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="eyebrow">教师端 · 学生账号</div>
+    <h1>{{ student.real_name }}</h1>
+    <p class="muted">账号详细信息</p>
+  </div>
+  <a class="button secondary" href="{{ url_for('teacher_accounts') }}">返回学生账号</a>
+</div>
+
+<div class="grid-2">
+  <section class="panel">
+    <h2>账号信息</h2>
+    <table class="account-info">
+      <tbody>
+        <tr><th>登录名 / 学号</th><td><code>{{ student.username }}</code></td></tr>
+        <tr><th>真实姓名</th><td><strong>{{ student.real_name }}</strong></td></tr>
+        <tr>
+          <th>账号密码</th>
+          <td>
+            {% if student.password %}
+            <code class="password-value">{{ student.password }}</code>
+            {% else %}
+            <span class="muted">旧账号未保存明文密码，请在右侧重置</span>
+            {% endif %}
+          </td>
+        </tr>
+        <tr><th>账号 ID</th><td><code>{{ student.id }}</code></td></tr>
+        <tr><th>注册时间</th><td>{{ student.created_at }}</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="panel">
+    <h2>重置密码</h2>
+    <p class="muted">设置新密码后，学生下次登录使用新密码。</p>
+    <form method="post" action="{{ url_for('teacher_reset_student_password', student_id=student.id) }}">
+      <div class="row">
+        <label for="new_password">新密码</label>
+        <input type="password" id="new_password" name="new_password" required minlength="6"
+               placeholder="至少 6 位">
+      </div>
+      <div class="row">
+        <label for="confirm">确认新密码</label>
+        <input type="password" id="confirm" name="confirm" required minlength="6">
+      </div>
+      <button type="submit" class="button">重置密码</button>
+    </form>
+  </section>
+</div>
+{% endblock %}

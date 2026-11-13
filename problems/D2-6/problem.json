@@ -1,0 +1,14 @@
+{
+  "id": "D2-6",
+  "title": "前缀和实现区间求和",
+  "type": "program",
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 256,
+  "score": 100.0,
+  "comparator": "token",
+  "tests": [],
+  "description": "",
+  "input_description": "",
+  "output_description": "",
+  "samples": []
+}

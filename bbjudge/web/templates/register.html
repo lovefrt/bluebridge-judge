@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}注册 · {{ brand }}{% endblock %}
+
+{% block content %}
+<div class="auth-wrap">
+  <section class="panel auth-panel">
+    <div class="eyebrow">学生注册</div>
+    <h1>创建账号</h1>
+    <p class="muted">请填写真实姓名，成绩榜会显示这个名字。</p>
+    <form method="post" action="{{ url_for('student_register') }}">
+      <div class="row">
+        <label for="username">登录名 / 学号（可选）</label>
+        <input type="text" id="username" name="username"
+               value="{{ username|default('') }}" placeholder="不填则使用真实姓名登录">
+        <div class="hint">如果真实姓名有重名，请填写学号作为登录名。</div>
+      </div>
+      <div class="row">
+        <label for="real_name">真实姓名</label>
+        <input type="text" id="real_name" name="real_name" required maxlength="40"
+               value="{{ real_name|default('') }}" placeholder="例如 张三">
+      </div>
+      <div class="row">
+        <label for="password">密码</label>
+        <input type="password" id="password" name="password" required minlength="6"
+               placeholder="至少 6 位">
+      </div>
+      <div class="row">
+        <label for="confirm">确认密码</label>
+        <input type="password" id="confirm" name="confirm" required minlength="6">
+      </div>
+      <button type="submit" class="button">注册并登录</button>
+      <a class="auth-link" href="{{ url_for('student_login') }}">已有账号？去登录</a>
+    </form>
+  </section>
+</div>
+{% endblock %}

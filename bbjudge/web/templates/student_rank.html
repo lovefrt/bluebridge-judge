@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}{{ exam.title }} · {{ brand }}{% endblock %}
+{% block body_attrs %}data-exam-id="{{ exam.id }}"{% if exam.state == 'running' and remaining_seconds is not none %} data-remaining="{{ remaining_seconds }}"{% endif %}{% if selected_board %} data-board-id="{{ selected_board.id }}"{% endif %}{% endblock %}
+
+{% block content %}
+{% include "_exam_header.html" %}
+
+{% if not exam.scoreboard_enabled or not boards %}
+<section class="panel">
+  <h2>实时成绩</h2>
+  <div class="empty">本场考试未开启实时排名。</div>
+</section>
+{% else %}
+<section class="panel scoreboard">
+  <div class="panel-head">
+    <h2>实时成绩</h2>
+    <span class="muted" id="scoreboard-updated">{{ selected_board.updated_at }}</span>
+  </div>
+
+  {% if boards|length > 1 %}
+  <div class="board-tabs">
+    {% for board in boards %}
+    <a class="{% if board.id == selected_board.id %}active{% endif %}"
+       href="{{ url_for('student_exam', exam_id=exam.id, view='rank', board=board.id) }}">
+      {{ board.title }}
+    </a>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div class="ticker" aria-label="实时成绩滚动播报">
+    <div class="ticker-track" id="ticker-track">
+      {% if selected_board.feed %}
+        {% for _ in [1, 2] %}
+          {% for item in selected_board.feed %}
+          <span class="ticker-item">
+            <b>{{ item.student }}</b>
+            <code>{{ item.problem_id }}</code>
+            {% if item.status == 'done' %}
+              <span class="badge {{ item.verdict }}">{{ item.verdict }}</span>
+              <span class="muted">{{ item.score|num }}/{{ item.max_score|num }}</span>
+            {% elif item.status == 'judging' %}
+              <span class="badge judging">评测中</span>
+            {% elif item.status == 'error' %}
+              <span class="badge SE">系统错误</span>
+            {% else %}
+              <span class="badge queued">排队中</span>
+            {% endif %}
+          </span>
+          {% endfor %}
+        {% endfor %}
+      {% else %}
+        <span class="ticker-item muted">等待第一份成绩…</span>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="ranking-wrap">
+    <table class="ranking">
+      <thead>
+        <tr><th>#</th><th>学生</th><th>总分</th><th>AC</th><th>提交</th></tr>
+      </thead>
+      <tbody id="ranking-rows">
+        {% for row in selected_board.ranking %}
+        <tr>
+          <td>{{ row.rank }}</td>
+          <td><strong>{{ row.student }}</strong></td>
+          <td>
+            {{ row.total|num }}
+            {% if row.raw_total is defined and row.paper_max and row.raw_total != row.total %}
+            <div class="muted small">原始 {{ row.raw_total|num }} / {{ row.paper_max|num }}</div>
+            {% endif %}
+          </td>
+          <td>{{ row.ac }}</td>
+          <td>{{ row.submissions }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5" class="empty">还没有成绩，来交第一份吧。</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p class="muted small">
+    {% if boards|length == 1 %}
+    单套试卷：原始分
+    {% elif selected_board.id == 'all' %}
+    总榜：多套试卷按平均满分归一化
+    {% else %}
+    分榜：本卷原始分
+    {% endif %}
+    · 每 1.2 秒刷新
+  </p>
+</section>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='student-exam.js') }}?v=3"></script>
+{% if exam.scoreboard_enabled and boards %}
+<script src="{{ url_for('static', filename='scoreboard.js') }}?v=3"></script>
+{% endif %}
+{% endblock %}

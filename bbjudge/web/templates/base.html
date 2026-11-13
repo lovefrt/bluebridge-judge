@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ brand }}{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=5">
+</head>
+<body {% block body_attrs %}{% endblock %}>
+  <header class="topbar">
+    <div class="brand">
+      <a href="{{ home_url }}">{{ brand }}</a>
+      <span class="sub">{{ subtitle }}</span>
+    </div>
+    <nav class="topnav">
+      {% if portal == 'teacher' %}
+      <a href="{{ url_for('teacher') }}">题目管理</a>
+      <a href="{{ url_for('teacher_papers') }}">试卷管理</a>
+      <a href="{{ url_for('teacher_exams') }}">考试管理</a>
+      <a href="{{ url_for('teacher_accounts') }}">学生账号</a>
+      {% else %}
+        {% if current_student %}
+        <a class="who" href="{{ url_for('student_account') }}">账号管理：{{ current_student.real_name }}</a>
+        <a href="{{ url_for('student') }}">考试列表</a>
+        <a href="{{ url_for('student_logout') }}">退出</a>
+        {% else %}
+        <a href="{{ url_for('student_login') }}">登录</a>
+        <a href="{{ url_for('student_register') }}">注册</a>
+        {% endif %}
+      {% endif %}
+      <span class="org">{{ org }}</span>
+    </nav>
+  </header>
+
+  <main class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flashes">
+          {% for category, message in messages %}
+            <div class="flash {{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer>Love-Coding · 本地判题工具 · 默认仅监听 127.0.0.1</footer>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

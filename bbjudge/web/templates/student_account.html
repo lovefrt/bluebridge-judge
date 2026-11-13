@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}账号管理 · {{ brand }}{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="eyebrow">学生端</div>
+    <h1>账号管理</h1>
+    <p class="muted">查看账号信息或修改密码。</p>
+  </div>
+  <a class="button secondary" href="{{ url_for('student') }}">返回考试列表</a>
+</div>
+
+<div class="grid-2">
+  <section class="panel">
+    <h2>账号信息</h2>
+    <table class="account-info">
+      <tbody>
+        <tr><th>登录名 / 学号</th><td><code>{{ student.username }}</code></td></tr>
+        <tr><th>真实姓名</th><td><strong>{{ student.real_name }}</strong></td></tr>
+        <tr><th>注册时间</th><td>{{ student.created_at }}</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="panel">
+    <h2>修改密码</h2>
+    <form method="post" action="{{ url_for('student_account_password') }}">
+      <div class="row">
+        <label for="old_password">原密码</label>
+        <input type="password" id="old_password" name="old_password" required>
+      </div>
+      <div class="row">
+        <label for="new_password">新密码</label>
+        <input type="password" id="new_password" name="new_password" required minlength="6"
+               placeholder="至少 6 位">
+      </div>
+      <div class="row">
+        <label for="confirm">确认新密码</label>
+        <input type="password" id="confirm" name="confirm" required minlength="6">
+      </div>
+      <button type="submit" class="button">保存新密码</button>
+    </form>
+    <p class="muted small">修改成功后当前登录仍然有效，下次登录请使用新密码。</p>
+  </section>
+</div>
+{% endblock %}

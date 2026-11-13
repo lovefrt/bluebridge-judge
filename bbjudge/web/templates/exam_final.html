@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}最终成绩 · {{ exam.title }} · {{ brand }}{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="eyebrow">教师端 · 最终成绩</div>
+    <h1>{{ exam.title }}</h1>
+    <p class="muted">
+      考试结束时间：{{ exam.ends_at or '—' }} ·
+      试卷：{{ exam.paper_titles|join('、') or '无' }} ·
+      最终快照生成于 {{ finalized_at or '—' }}
+    </p>
+  </div>
+  <a class="button secondary" href="{{ url_for('teacher_exams') }}">返回考试管理</a>
+</div>
+
+<div class="cards">
+  <div class="card"><div class="num">{{ ranking|length }}</div><div class="label">参赛学生</div></div>
+  <div class="card"><div class="num">{{ ranking|sum(attribute='submissions') }}</div><div class="label">提交总数</div></div>
+  <div class="card"><div class="num">{{ exam.duration_minutes }}</div><div class="label">考试时长（分钟）</div></div>
+</div>
+
+<section class="panel">
+  <div class="panel-head">
+    <h2>最终排名</h2>
+    <span class="badge CE">已结束</span>
+  </div>
+  <p class="muted">这是考试结束时的成绩快照，之后不会因为其他操作而改变。多套试卷按平均满分归一化。</p>
+  <table class="ranking final-ranking">
+    <thead>
+      <tr><th>#</th><th>学生</th><th>总分</th><th>AC</th><th>提交</th></tr>
+    </thead>
+    <tbody>
+      {% for row in ranking %}
+      <tr>
+        <td>{{ row.rank }}</td>
+        <td><strong>{{ row.student }}</strong></td>
+        <td>
+          {{ row.total|num }}
+          {% if row.raw_total is defined and row.paper_max and row.raw_total != row.total %}
+          <div class="muted small">原始 {{ row.raw_total|num }} / {{ row.paper_max|num }}</div>
+          {% endif %}
+        </td>
+        <td>{{ row.ac }}</td>
+        <td>{{ row.submissions }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="5" class="empty">这场考试没有学生提交。</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

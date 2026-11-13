@@ -1,0 +1,11 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# 评测输出（演示时可重新生成）
+reports/
+reports_filtered/
+
+# Web 端上传与状态数据
+webdata/
+webdata_*/

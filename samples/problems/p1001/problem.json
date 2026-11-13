@@ -1,0 +1,13 @@
+{
+  "id": "p1001",
+  "title": "A + B",
+  "type": "program",
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 256,
+  "score": 100,
+  "comparator": "token",
+  "tests": [
+    { "name": "样例 1", "input": "tests/01.in", "answer": "tests/01.out", "score": 40 },
+    { "name": "大数测试", "input": "tests/02.in", "answer": "tests/02.out", "score": 60 }
+  ]
+}

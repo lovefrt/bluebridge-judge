@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}登录 · {{ brand }}{% endblock %}
+
+{% block content %}
+<div class="auth-wrap">
+  <section class="panel auth-panel">
+    <div class="eyebrow">学生登录</div>
+    <h1>欢迎回来</h1>
+    <p class="muted">使用老师发给你、或你自己注册的账号登录。</p>
+    <form method="post" action="{{ url_for('student_login', next=request.args.get('next', '')) }}">
+      <div class="row">
+        <label for="username">登录名 / 学号 / 真实姓名</label>
+        <input type="text" id="username" name="username" required autofocus
+               value="{{ username|default('') }}" placeholder="例如 20260101 或 张三">
+      </div>
+      <div class="row">
+        <label for="password">密码</label>
+        <input type="password" id="password" name="password" required placeholder="至少 6 位">
+      </div>
+      <button type="submit" class="button">登录</button>
+      <a class="auth-link" href="{{ url_for('student_register') }}">还没有账号？去注册</a>
+    </form>
+  </section>
+</div>
+{% endblock %}

@@ -1,0 +1,14 @@
+{
+  "id": "p1003",
+  "title": "快速幂",
+  "type": "program",
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 256,
+  "score": 100,
+  "comparator": "token",
+  "tests": [
+    { "name": "样例 1", "input": "tests/01.in", "answer": "tests/01.out", "score": 40 },
+    { "name": "指数为 0", "input": "tests/02.in", "answer": "tests/02.out", "score": 30 },
+    { "name": "大数据", "input": "tests/03.in", "answer": "tests/03.out", "score": 30 }
+  ]
+}

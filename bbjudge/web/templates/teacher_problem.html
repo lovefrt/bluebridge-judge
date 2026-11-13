@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}{{ problem.title }} · 题目编辑 · {{ brand }}{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="eyebrow">教师端 · 题目编辑</div>
+    <h1>{{ problem.title }}</h1>
+    <p class="muted">
+      <code>{{ problem.id }}</code> ·
+      {{ '结果填空' if problem.is_fill_result else '编程题' }} ·
+      {{ problem.display_score|num }} 分 ·
+      {{ problem.time_limit_ms }} ms ·
+      {{ problem.memory_limit_mb }} MB
+    </p>
+  </div>
+  <a class="button secondary" href="{{ url_for('teacher') }}">返回题目管理</a>
+</div>
+
+<form id="edit-problem-form" data-pid="{{ problem.id }}">
+  <section class="panel">
+    <h2>基本信息</h2>
+    <div class="form-grid">
+      <div class="row">
+        <label for="edit-title">题目名称</label>
+        <input type="text" id="edit-title" name="title" value="{{ problem.title }}" required>
+      </div>
+      <div class="row">
+        <label>题型</label>
+        <input type="text" value="{{ '结果填空' if problem.is_fill_result else '编程题' }}" disabled>
+      </div>
+      <div class="row">
+        <label for="edit-score">满分</label>
+        <input type="number" id="edit-score" name="score" value="{{ problem.display_score }}"
+               min="1" step="1">
+      </div>
+      <div class="row">
+        <label for="edit-time">时限 (ms)</label>
+        <input type="number" id="edit-time" name="time_limit_ms"
+               value="{{ problem.time_limit_ms }}" min="1">
+      </div>
+      <div class="row">
+        <label for="edit-memory">内存 (MB)</label>
+        <input type="number" id="edit-memory" name="memory_limit_mb"
+               value="{{ problem.memory_limit_mb }}" min="1">
+      </div>
+      <div class="row">
+        <label for="edit-comparator">输出比对</label>
+        <select id="edit-comparator" name="comparator">
+          {% for value, label in [
+            ('token', '忽略空白（token）'),
+            ('line', '按行，忽略行末空格'),
+            ('exact', '精确比对'),
+            ('float', '浮点误差')
+          ] %}
+          <option value="{{ value }}" {% if problem.comparator == value %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <div class="row">
+      <label>题目描述</label>
+      <div id="edit-description" class="rich-editor" contenteditable="true"
+           data-placeholder="在这里写题目描述，可以直接粘贴图片">{{ problem.description|safe }}</div>
+      <div class="hint">支持直接粘贴截图；图片会随题面一起保存。</div>
+    </div>
+
+    <div class="form-grid">
+      <div class="row">
+        <label for="edit-input-description">输入描述</label>
+        <textarea id="edit-input-description" name="input_description"
+                  placeholder="例如：第一行两个整数 n, m……">{{ problem.input_description }}</textarea>
+      </div>
+      <div class="row">
+        <label for="edit-output-description">输出描述</label>
+        <textarea id="edit-output-description" name="output_description"
+                  placeholder="例如：输出一个整数，表示答案。">{{ problem.output_description }}</textarea>
+      </div>
+    </div>
+
+    {% if problem.is_fill_result %}
+    <div class="row">
+      <label for="edit-answers">标准答案（每行一个）</label>
+      <textarea id="edit-answers" name="answers">{{ problem.answers|join('\n') }}</textarea>
+    </div>
+    {% endif %}
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2>输入输出样例</h2>
+      <button type="button" class="button secondary" data-add-sample>添加示例</button>
+    </div>
+    <div id="edit-sample-list">
+      {% for sample in problem.samples %}
+      <div class="sample-row">
+        <div class="panel-head">
+          <h3>示例 {{ loop.index }}</h3>
+          <button type="button" class="link-button danger" data-remove-sample>删除</button>
+        </div>
+        <div class="form-grid">
+          <div class="row">
+            <label>输入</label>
+            <textarea class="sample-input" rows="5" placeholder="输入数据，可留空">{{ sample.input }}</textarea>
+          </div>
+          <div class="row">
+            <label>输出</label>
+            <textarea class="sample-output" rows="5" placeholder="标准输出">{{ sample.output }}</textarea>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2>测试用例</h2>
+      <a class="button secondary" href="{{ url_for('teacher', problem=problem.id) }}#add-test-panel">添加测试用例</a>
+    </div>
+    <table class="account-list">
+      <thead><tr><th>#</th><th>名称</th><th>分值</th><th>输入</th><th>标准输出</th><th>操作</th></tr></thead>
+      <tbody>
+        {% for test in problem.tests %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td>{{ test.name }}</td>
+          <td>{{ test.score|num }}</td>
+          <td><code>{{ test.input.name if test.input else '空' }}</code></td>
+          <td><code>{{ test.answer.name if test.answer else '空' }}</code></td>
+          <td>
+            <button type="button" class="link-button danger"
+                    data-delete-test="{{ test.index }}">删除</button>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="empty">
+          {% if problem.is_fill_result %}结果填空题直接比对标准答案。{% else %}还没有测试用例，点右上角添加。{% endif %}
+        </td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+
+  <div class="form-actions">
+    <button type="submit" class="button">保存修改</button>
+    <a class="button" href="{{ url_for('teacher') }}">返回题目管理</a>
+    <span id="edit-message" class="form-message"></span>
+  </div>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='problem-editor.js') }}?v=1"></script>
+<script src="{{ url_for('static', filename='teacher-problem.js') }}?v=2"></script>
+{% endblock %}

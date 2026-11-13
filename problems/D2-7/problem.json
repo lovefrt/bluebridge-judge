@@ -1,0 +1,14 @@
+{
+  "id": "D2-7",
+  "title": "最优分组（附加题）",
+  "type": "program",
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 256,
+  "score": 100.0,
+  "comparator": "token",
+  "tests": [],
+  "description": "",
+  "input_description": "",
+  "output_description": "",
+  "samples": []
+}

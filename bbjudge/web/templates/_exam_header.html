@@ -1,0 +1,27 @@
+<div class="page-head">
+  <div>
+    <div class="eyebrow">学生端 · {{ '正在作答' if exam.state == 'running' else '考试' }}</div>
+    <h1>{{ exam.title }}</h1>
+    <p class="muted">
+      <span class="badge {{ exam.state_badge }}">{{ exam.state_label }}</span>
+      <span class="countdown" id="countdown">
+        {% if exam.state == 'running' %}剩余 {{ exam.remaining_text }}{% else %}{{ exam.remaining_text }}{% endif %}
+      </span>
+      · {{ exam.duration_minutes }} 分钟 · {{ papers|length }} 套试卷
+    </p>
+  </div>
+  <a class="button secondary" href="{{ url_for('student') }}">返回考试列表</a>
+</div>
+
+{% if exam.state != 'running' %}
+<div class="flash {{ 'err' if exam.state == 'ended' else 'ok' }}">
+  {% if exam.state == 'ended' %}本场考试已经结束，不能再提交。{% else %}考试还没有开始，请等待老师点击“开始作答”。{% endif %}
+</div>
+{% endif %}
+
+<nav class="exam-tabs" aria-label="考试界面切换">
+  <a class="{% if active_view == 'rank' %}active{% endif %}"
+     href="{{ url_for('student_exam', exam_id=exam.id, view='rank') }}">实时排名</a>
+  <a class="{% if active_view == 'submit' %}active{% endif %}"
+     href="{{ url_for('student_exam', exam_id=exam.id, view='submit', paper=selected_paper.id if selected_paper else None) }}">提交源码 / 答案</a>
+</nav>

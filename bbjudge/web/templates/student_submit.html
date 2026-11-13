@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}提交源码 / 答案 · {{ exam.title }} · {{ brand }}{% endblock %}
+{% block body_attrs %}data-exam-id="{{ exam.id }}"{% if exam.state == 'running' and remaining_seconds is not none %} data-remaining="{{ remaining_seconds }}"{% endif %}{% endblock %}
+
+{% block content %}
+{% include "_exam_header.html" %}
+
+<section class="panel">
+  <h2>提交源码 / 答案</h2>
+
+  {% if exam.state == 'running' and papers %}
+  <form method="get" action="{{ url_for('student_exam', exam_id=exam.id) }}" class="paper-picker">
+    <input type="hidden" name="view" value="submit">
+    <label for="paper-select">选择试卷</label>
+    <select id="paper-select" name="paper" onchange="this.form.submit()">
+      {% for paper in papers %}
+      <option value="{{ paper.id }}" {% if selected_paper and paper.id == selected_paper.id %}selected{% endif %}>
+        {{ paper.title }} · {{ paper.problem_count }} 题
+      </option>
+      {% endfor %}
+    </select>
+  </form>
+
+  {% if problems %}
+  <form method="post" action="{{ url_for('student_submit') }}" enctype="multipart/form-data" id="submit-form">
+    <input type="hidden" name="exam_id" value="{{ exam.id }}">
+    <input type="hidden" name="paper_id" value="{{ selected_paper.id }}">
+
+    <div class="row">
+      <label for="problem">题目</label>
+      <select id="problem" name="problem" required>
+        {% for p in problems %}
+        <option value="{{ p.id }}" data-kind="{{ 'fill' if p.is_fill_result else 'program' }}"
+                {% if p.id == selected_problem_id %}selected{% endif %}>
+          {{ p.id }} · {{ p.title }} · {{ '结果填空' if p.is_fill_result else '编程题' }} · {{ p.max_score|num }} 分
+        </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="problem-info" id="problem-info">
+      <h3>题目信息</h3>
+      <div id="problem-detail" class="muted">选择题目后显示题面。</div>
+    </div>
+
+    <div class="row">
+      <label for="file">源码 / 答案文件</label>
+      <input type="file" id="file" name="file"
+             accept=".cpp,.cc,.cxx,.c++,.c,.java,.py,.txt">
+      <div class="hint">支持 C++、C、Java、Python；结果填空题可上传 .txt。文件上限 1 MB。</div>
+    </div>
+
+    <div class="row">
+      <label for="language">语言（文件后缀无法识别时使用）</label>
+      <select id="language" name="language">
+        <option value="auto">自动识别</option>
+        <option value="cpp">C++</option>
+        <option value="c">C</option>
+        <option value="java">Java</option>
+        <option value="python">Python</option>
+      </select>
+    </div>
+
+    <div class="row">
+      <label for="text">或者直接粘贴源码 / 答案</label>
+      <textarea id="text" name="text" placeholder="没有文件时，把代码或答案粘贴到这里（程序题默认按 C++ 处理）"></textarea>
+    </div>
+
+    <button type="submit" class="button" id="submit-button">提交并开始评测</button>
+  </form>
+  <script type="application/json" id="problem-data">{{ problem_data|tojson }}</script>
+  {% else %}
+  <div class="flash err">这套试卷还没有可作答的题目，请联系老师。</div>
+  {% endif %}
+  {% else %}
+  <div class="empty">考试进行中才能提交。</div>
+  {% endif %}
+
+  <div class="tips-box always">
+    <h3>提交说明</h3>
+    <ul class="tips">
+      <li>提交前先在顶部确认考试，并在上方选择试卷；提交会记录到你的账号。</li>
+      <li>文件优先于粘贴内容；两者只填一个即可。</li>
+      <li>结果填空题直接填最终答案，不要写解题过程。</li>
+      <li>考试到时间会自动关闭提交，请预留上传时间。</li>
+      <li>提交后可以留在结果页，状态会自动刷新。</li>
+    </ul>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='student-problem.js') }}?v=1"></script>
+<script src="{{ url_for('static', filename='student-exam.js') }}?v=3"></script>
+{% endblock %}

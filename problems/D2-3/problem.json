@@ -1,0 +1,93 @@
+{
+  "id": "D2-3",
+  "title": "用三次逆置实现数组循环左移（大一选做）",
+  "type": "program",
+  "time_limit_ms": 1000,
+  "memory_limit_mb": 256,
+  "score": 100.0,
+  "comparator": "token",
+  "tests": [
+    {
+      "name": "测试点 1",
+      "input": "tests/case_01.in",
+      "answer": "tests/case_01.out",
+      "score": 10.0
+    },
+    {
+      "name": "测试点 2",
+      "input": "tests/case_02.in",
+      "answer": "tests/case_02.out",
+      "score": 10.0
+    },
+    {
+      "name": "测试点 3",
+      "input": "tests/case_03.in",
+      "answer": "tests/case_03.out",
+      "score": 10.0
+    },
+    {
+      "name": "测试点 4",
+      "input": "tests/case_04.in",
+      "answer": "tests/case_04.out",
+      "score": 10.0
+    },
+    {
+      "name": "测试点 5",
+      "input": "tests/case_05.in",
+      "answer": "tests/case_05.out",
+      "score": 10.0
+    },
+    {
+      "name": "测试点 6",
+      "input": "tests/case_06.in",
+      "answer": "tests/case_06.out",
+      "score": 10.0
+    },
+    {
+      "name": "测试点 7",
+      "input": "tests/case_07.in",
+      "answer": "tests/case_07.out",
+      "score": 10.0
+    },
+    {
+      "name": "测试点 8",
+      "input": "tests/case_08.in",
+      "answer": "tests/case_08.out",
+      "score": 10.0
+    },
+    {
+      "name": "测试点 9",
+      "input": "tests/case_09.in",
+      "answer": "tests/case_09.out",
+      "score": 10.0
+    },
+    {
+      "name": "测试点 10",
+      "input": "tests/case_10.in",
+      "answer": "tests/case_10.out",
+      "score": 10.0
+    },
+    {
+      "name": "测试点 11",
+      "input": "tests/case_11.in",
+      "answer": "tests/case_11.out",
+      "score": 10.0
+    },
+    {
+      "name": "测试点 12",
+      "input": "tests/case_12.in",
+      "answer": "tests/case_12.out",
+      "score": 10.0
+    },
+    {
+      "name": "测试点 13",
+      "input": "tests/case_13.in",
+      "answer": "tests/case_13.out",
+      "score": 10.0
+    }
+  ],
+  "description": "",
+  "input_description": "",
+  "output_description": "",
+  "samples": []
+}

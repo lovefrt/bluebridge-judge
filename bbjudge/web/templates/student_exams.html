@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}选择考试 · {{ brand }}{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="eyebrow">学生端</div>
+    <h1>选择考试</h1>
+    <p class="muted">请选择正在进行的考试进入；开始作答后不能更换考试。</p>
+  </div>
+</div>
+
+{% if exams %}
+<section class="panel">
+  <table class="exam-list">
+    <thead>
+      <tr><th>考试</th><th>状态</th><th>试卷</th><th>时长</th><th>剩余</th><th>实时排名</th><th>操作</th></tr>
+    </thead>
+    <tbody>
+      {% for exam in exams %}
+      <tr>
+        <td>
+          <strong>{{ exam.title }}</strong>
+          <div class="muted small">创建于 {{ exam.created_at }}</div>
+        </td>
+        <td><span class="badge {{ exam.state_badge }}">{{ exam.state_label }}</span></td>
+        <td>
+          {{ exam.paper_count }} 套
+          <div class="muted small">{{ exam.paper_titles|join('、') or '暂无试卷' }}</div>
+        </td>
+        <td>{{ exam.duration_minutes }} 分钟</td>
+        <td>{{ exam.remaining_text }}</td>
+        <td>
+          {% if exam.scoreboard_enabled %}
+          <span class="badge AC">开启</span>
+          {% else %}
+          <span class="badge CE">关闭</span>
+          {% endif %}
+        </td>
+        <td>
+          {% if exam.state == 'running' %}
+          <a class="button" href="{{ url_for('student_exam', exam_id=exam.id) }}">进入考试</a>
+          {% elif exam.state == 'upcoming' %}
+          <span class="muted">等待老师开始</span>
+          {% else %}
+          <span class="muted">已结束</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% else %}
+<section class="panel">
+  <div class="empty">老师还没有创建考试，请稍后再来。</div>
+</section>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block title %}题目管理 · {{ brand }}{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="eyebrow">教师端</div>
+    <h1>题目管理</h1>
+    <p class="muted">在这里创建题目、添加测试用例。成绩只在学生端展示。</p>
+  </div>
+</div>
+
+<div class="grid-2">
+  <section class="panel">
+    <h2>创建题目</h2>
+    <form id="create-problem-form">
+      <div class="form-grid">
+        <div class="row">
+          <label for="problem-id">题目编号</label>
+          <input type="text" id="problem-id" name="id" required
+                 pattern="[A-Za-z0-9][A-Za-z0-9_-]{0,31}"
+                 placeholder="例如 p2001">
+        </div>
+        <div class="row">
+          <label for="problem-title">题目名称</label>
+          <input type="text" id="problem-title" name="title" required placeholder="例如 区间求和">
+        </div>
+        <div class="row">
+          <label for="problem-type">题型</label>
+          <select id="problem-type" name="type">
+            <option value="program">编程题</option>
+            <option value="fill_result">结果填空题</option>
+          </select>
+        </div>
+        <div class="row">
+          <label for="problem-score">满分</label>
+          <input type="number" id="problem-score" name="score" value="100" min="1" step="1">
+        </div>
+        <div class="row">
+          <label for="problem-time">时限 (ms)</label>
+          <input type="number" id="problem-time" name="time_limit_ms" value="1000" min="1">
+        </div>
+        <div class="row">
+          <label for="problem-memory">内存 (MB)</label>
+          <input type="number" id="problem-memory" name="memory_limit_mb" value="256" min="1">
+        </div>
+        <div class="row" id="comparator-row">
+          <label for="problem-comparator">输出比对</label>
+          <select id="problem-comparator" name="comparator">
+            <option value="token">忽略空白（token）</option>
+            <option value="line">按行，忽略行末空格</option>
+            <option value="exact">精确比对</option>
+            <option value="float">浮点误差</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row">
+        <label>题目描述</label>
+        <div id="problem-description" class="rich-editor" contenteditable="true"
+             data-placeholder="在这里写题目描述，可以直接粘贴图片"></div>
+        <div class="hint">支持直接粘贴截图；图片会随题面一起保存。</div>
+      </div>
+
+      <div class="form-grid">
+        <div class="row">
+          <label for="problem-input-description">输入描述</label>
+          <textarea id="problem-input-description" name="input_description"
+                    placeholder="例如：第一行两个整数 n, m……"></textarea>
+        </div>
+        <div class="row">
+          <label for="problem-output-description">输出描述</label>
+          <textarea id="problem-output-description" name="output_description"
+                    placeholder="例如：输出一个整数，表示答案。"></textarea>
+        </div>
+      </div>
+
+      <div class="sample-editor">
+        <div class="panel-head">
+          <h3>输入输出样例</h3>
+          <button type="button" class="button secondary" data-add-sample>添加示例</button>
+        </div>
+        <div id="sample-list"></div>
+      </div>
+
+      <div class="row" id="answers-row" hidden>
+        <label for="problem-answers">标准答案（每行一个）</label>
+        <textarea id="problem-answers" name="answers"
+                  placeholder="例如：&#10;5050"></textarea>
+        <div class="hint">结果填空题没有测试用例，直接比对这里的答案。</div>
+      </div>
+
+      <button type="submit" class="button">创建题目</button>
+      <span id="create-message" class="form-message"></span>
+    </form>
+  </section>
+
+  <section class="panel" id="add-test-panel">
+    <h2>添加测试用例</h2>
+    {% if program_problems %}
+    <form id="add-test-form">
+      <div class="row">
+        <label for="test-problem">题目</label>
+        <select id="test-problem" name="problem">
+          {% for p in program_problems %}
+          <option value="{{ p.id }}" {% if p.id == selected_problem %}selected{% endif %}>{{ p.id }} · {{ p.title }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-grid">
+        <div class="row">
+          <label for="test-name">测试点名称</label>
+          <input type="text" id="test-name" name="name" placeholder="例如 大数测试">
+        </div>
+        <div class="row">
+          <label for="test-score">分值</label>
+          <input type="number" id="test-score" name="score" value="10" min="1" step="1">
+        </div>
+      </div>
+      <div class="row">
+        <label for="test-input">输入数据</label>
+        <textarea id="test-input" name="input_text" placeholder="没有输入可以留空"></textarea>
+        <div class="hint">或上传输入文件：<input type="file" name="input_file"></div>
+      </div>
+      <div class="row">
+        <label for="test-answer">标准输出</label>
+        <textarea id="test-answer" name="answer_text" placeholder="必填，程序应输出的内容"></textarea>
+        <div class="hint">或上传输出文件：<input type="file" name="answer_file"></div>
+      </div>
+      <button type="submit" class="button">添加测试点</button>
+      <span id="test-message" class="form-message"></span>
+    </form>
+    {% else %}
+    <p class="muted">先创建一道编程题，才能添加测试用例。</p>
+    {% endif %}
+  </section>
+</div>
+
+<section class="panel">
+  <div class="panel-head">
+    <h2>题目列表</h2>
+    <span class="muted">共 {{ problems|length }} 道</span>
+  </div>
+  <table class="problems-list">
+    <thead>
+      <tr><th>编号</th><th>题目</th><th>题型</th><th>测试点</th><th>满分</th><th>状态</th><th>操作</th></tr>
+    </thead>
+    <tbody>
+      {% for p in problems %}
+      <tr>
+        <td><code>{{ p.id }}</code></td>
+        <td><a href="{{ url_for('teacher_problem', pid=p.id) }}">{{ p.title }}</a></td>
+        <td>{{ '结果填空' if p.is_fill_result else '编程题' }}</td>
+        <td>{% if p.is_fill_result %}—{% else %}{{ p.tests|length }}{% endif %}</td>
+        <td>{{ p.display_score|num }}</td>
+        <td>
+          {% if p.is_ready %}
+          <span class="badge AC">就绪</span>
+          {% else %}
+          <span class="badge queued">待添加测试点</span>
+          {% endif %}
+        </td>
+        <td>
+          {% if not p.is_fill_result %}
+          <button type="button" class="link-button" data-add-test="{{ p.id }}">添加测试点</button>
+          {% else %}
+          <span class="muted small">答案比对</span>
+          {% endif %}
+          <button type="button" class="link-button danger" data-delete-problem="{{ p.id }}">删除</button>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="7" class="empty">还没有题目，先在上面的表单创建一道。</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='problem-editor.js') }}?v=1"></script>
+<script src="{{ url_for('static', filename='teacher-admin.js') }}?v=6"></script>
+{% endblock %}

@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}考试管理 · {{ brand }}{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="eyebrow">教师端</div>
+    <h1>考试管理</h1>
+    <p class="muted">创建考试、选择试卷、点击开始作答并设置时长；到时间学生端自动禁止提交。</p>
+  </div>
+</div>
+
+<section class="panel">
+  <h2>创建考试</h2>
+  {% if papers %}
+  <form id="create-exam-form">
+    <div class="form-grid">
+      <div class="row">
+        <label for="exam-title">考试名称</label>
+        <input type="text" id="exam-title" name="title" required placeholder="例如 第一次阶段测验">
+      </div>
+      <div class="row">
+        <label for="exam-duration">考试时长（分钟）</label>
+        <input type="number" id="exam-duration" name="duration_minutes" value="60" min="1" max="1440">
+      </div>
+    </div>
+    <div class="row">
+      <label>选择试卷（可多选，学生进入后自行选择一套）</label>
+      <div class="check-grid two">
+        {% for paper in papers %}
+        <label class="check-item">
+          <input type="checkbox" name="paper" value="{{ paper.id }}">
+          <span><strong>{{ paper.title }}</strong>
+            <span class="muted small">（{{ paper.problem_count }} 题）</span>
+          </span>
+        </label>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="row">
+      <label class="check-item inline">
+        <input type="checkbox" id="exam-scoreboard" name="scoreboard_enabled" checked>
+        <span>开启实时成绩排名</span>
+      </label>
+      <div class="hint">考试开始后也可以随时切换。</div>
+    </div>
+    <button type="submit" class="button">创建考试</button>
+    <span id="exam-message" class="form-message"></span>
+  </form>
+  {% else %}
+  <div class="empty">还没有试卷，请先到试卷管理创建一套试卷。</div>
+  {% endif %}
+</section>
+
+<section class="panel">
+  <div class="panel-head">
+    <h2>考试列表</h2>
+    <span class="muted">共 {{ exams|length }} 场</span>
+  </div>
+  <table class="exam-admin-list">
+    <thead>
+      <tr><th>考试</th><th>状态</th><th>试卷</th><th>时间</th><th>实时排名</th><th>操作</th></tr>
+    </thead>
+    <tbody>
+      {% for exam in exams %}
+      <tr>
+        <td>
+          <strong>{{ exam.title }}</strong>
+          <div class="muted small">{{ exam.duration_minutes }} 分钟</div>
+        </td>
+        <td>
+          <span class="badge {{ exam.state_badge }}">{{ exam.state_label }}</span>
+          {% if exam.state == 'running' %}<div class="muted small">{{ exam.remaining_text }}</div>{% endif %}
+        </td>
+        <td>
+          {{ exam.paper_count }} 套
+          <div class="muted small">{{ exam.paper_titles|join('、') or '无' }}</div>
+        </td>
+        <td class="small">
+          {% if exam.started_at %}{{ exam.started_at }}<br>至 {{ exam.ends_at }}{% else %}未开始{% endif %}
+        </td>
+        <td>
+          <label class="switch">
+            <input type="checkbox" data-scoreboard-exam="{{ exam.id }}"
+                   {% if exam.scoreboard_enabled %}checked{% endif %}>
+            <span>{{ '已开启' if exam.scoreboard_enabled else '已关闭' }}</span>
+          </label>
+        </td>
+        <td class="nowrap">
+          {% if exam.state == 'upcoming' %}
+          <button type="button" class="link-button" data-start-exam="{{ exam.id }}">开始作答</button>
+          {% elif exam.state == 'running' %}
+          <button type="button" class="link-button" data-end-exam="{{ exam.id }}">结束考试</button>
+          {% else %}
+          <a class="link-button" href="{{ url_for('teacher_exam_final', exam_id=exam.id) }}">查看最终成绩</a>
+          {% endif %}
+          <button type="button" class="link-button danger" data-delete-exam="{{ exam.id }}">删除</button>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6" class="empty">还没有考试。</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<section class="panel">
+  <h2>学生端规则</h2>
+  <ul class="tips">
+    <li>考试开始前，学生只能看到“等待老师开始”。</li>
+    <li>考试进行中，学生先选考试、再选一套试卷，然后提交。</li>
+    <li>到达结束时间后，服务器会拒绝提交，学生端倒计时归零。</li>
+    <li>“实时排名”开关只影响这场考试的学生端展示。</li>
+  </ul>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='teacher-exams.js') }}?v=2"></script>
+{% endblock %}

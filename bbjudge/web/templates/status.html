@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}提交结果 · {{ brand }}{% endblock %}
+{% block body_attrs %}data-submission-id="{{ submission.id }}"{% endblock %}
+
+{% block content %}
+{% set result = record.result %}
+<section class="panel">
+  <div class="status-hero">
+    <div>
+      <div class="eyebrow">提交结果</div>
+      <h1 id="status-title">{{ submission.status_label }}</h1>
+      <p class="muted">
+        {{ submission.student }} · <code>{{ submission.problem_id }}</code> {{ submission.problem_title }} ·
+        {{ submission.created_at }}
+      </p>
+      {% if record.exam_title %}
+      <p class="muted">考试：{{ record.exam_title }}{% if record.paper_title %} · 试卷：{{ record.paper_title }}{% endif %}</p>
+      {% endif %}
+    </div>
+    <span id="status-badge" class="badge {{ submission.badge }} big">{{ submission.badge }}</span>
+  </div>
+
+  <div class="cards">
+    <div class="card">
+      <div class="num" id="score">{{ submission.score_text }}{% if record.status == 'done' %} / {{ record.max_score|round|int }}{% endif %}</div>
+      <div class="label">得分</div>
+    </div>
+    <div class="card"><div class="num" id="time">{{ submission.time_text }}</div><div class="label">用时 (ms)</div></div>
+    <div class="card"><div class="num" id="memory">{{ submission.memory_text }}</div><div class="label">内存 (MB)</div></div>
+  </div>
+
+  <p id="message" class="message">{{ submission.message }}</p>
+  <p class="muted">文件：{{ submission.filename }} · 语言：{{ submission.language }}</p>
+
+  <h2>测试点</h2>
+  <table class="tests">
+    <thead>
+      <tr><th>#</th><th>测试点</th><th>结果</th><th>得分</th><th>用时(ms)</th><th>内存(MB)</th><th>说明</th></tr>
+    </thead>
+    <tbody id="test-rows">
+      {% if result and result.tests %}
+        {% for t in result.tests %}
+        <tr>
+          <td>{{ t.index }}</td>
+          <td>{{ t.name }}</td>
+          <td><span class="badge {{ t.verdict }}">{{ t.verdict }}</span></td>
+          <td>{{ t.score|num }} / {{ t.max_score|num }}</td>
+          <td>{{ t.time_ms|round(0)|int }}</td>
+          <td>{{ (t.memory_kb / 1024)|round(1) }}</td>
+          <td class="msg">{{ t.message }}</td>
+        </tr>
+        {% endfor %}
+      {% else %}
+        <tr><td colspan="7" class="empty">{% if record.status == 'done' %}没有测试点（编译未通过）{% else %}等待评测…{% endif %}</td></tr>
+      {% endif %}
+    </tbody>
+  </table>
+
+  <details id="compile-block" class="compile" {% if not result or not result.compile_output %}hidden{% endif %}>
+    <summary>编译输出</summary>
+    <pre id="compile-output">{{ result.compile_output if result else '' }}</pre>
+  </details>
+
+  <div class="actions">
+    {% if record.exam_id %}
+    <a class="button" href="{{ url_for('student_exam', exam_id=record.exam_id, view='submit', paper=record.paper_id) }}">再交一份</a>
+    {% endif %}
+    <a class="button secondary" href="{{ url_for('student') }}">返回考试列表</a>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='status.js') }}?v=2"></script>
+{% endblock %}

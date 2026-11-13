@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}出错了 · {{ brand }}{% endblock %}
+
+{% block content %}
+<section class="panel">
+  <h1>出错了</h1>
+  <p class="muted">{{ message }}</p>
+  <div class="actions">
+    <a class="button" href="{{ home_url }}">{{ '返回题目管理' if portal == 'teacher' else '返回考试列表' }}</a>
+  </div>
+</section>
+{% endblock %}

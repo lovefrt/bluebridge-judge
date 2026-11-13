@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}学生账号 · {{ brand }}{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="eyebrow">教师端</div>
+    <h1>学生账号</h1>
+    <p class="muted">学生注册时需要填写登录名、真实姓名和密码；成绩榜显示真实姓名。</p>
+  </div>
+</div>
+
+<section class="panel">
+  <div class="panel-head">
+    <h2>已注册账号</h2>
+    <span class="muted">共 {{ students|length }} 个</span>
+  </div>
+  <table class="account-list">
+    <thead><tr><th>登录名 / 学号</th><th>真实姓名</th><th>注册时间</th><th>操作</th></tr></thead>
+    <tbody>
+      {% for student in students %}
+      <tr>
+        <td><code>{{ student.username }}</code></td>
+        <td>
+          <a href="{{ url_for('teacher_account', student_id=student.id) }}">
+            <strong>{{ student.real_name }}</strong>
+          </a>
+          <div class="muted small">点击查看账号详情</div>
+        </td>
+        <td class="muted">{{ student.created_at }}</td>
+        <td><button type="button" class="link-button danger" data-delete-student="{{ student.id }}">删除</button></td>
+      </tr>
+      {% else %}
+      <tr><td colspan="4" class="empty">还没有学生注册。把学生端登录页发给他们即可。</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='teacher-accounts.js') }}?v=2"></script>
+{% endblock %}

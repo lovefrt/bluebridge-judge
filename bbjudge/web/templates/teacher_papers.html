@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}试卷管理 · {{ brand }}{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="eyebrow">教师端</div>
+    <h1>试卷管理</h1>
+    <p class="muted">把已经就绪的题目组合成试卷，供考试选择。</p>
+  </div>
+</div>
+
+<section class="panel">
+  <h2>创建试卷</h2>
+  {% if problems %}
+  <form id="create-paper-form">
+    <div class="row">
+      <label for="paper-title">试卷名称</label>
+      <input type="text" id="paper-title" name="title" required placeholder="例如 A 卷 / 基础卷">
+    </div>
+    <div class="row">
+      <label>选择题目</label>
+      <div class="check-grid two">
+        {% for p in problems %}
+        <label class="check-item">
+          <input type="checkbox" name="problem" value="{{ p.id }}">
+          <span><code>{{ p.id }}</code> {{ p.title }}
+            <span class="muted small">（{{ '填空' if p.is_fill_result else '编程' }} · {{ p.max_score|num }} 分）</span>
+          </span>
+        </label>
+        {% endfor %}
+      </div>
+      <div class="hint">只有已经添加完测试点的题目才能加入试卷。</div>
+    </div>
+    <button type="submit" class="button">创建试卷</button>
+    <span id="paper-message" class="form-message"></span>
+  </form>
+  {% else %}
+  <div class="empty">还没有就绪的题目，请先到题目管理创建题目并添加测试点。</div>
+  {% endif %}
+</section>
+
+<section class="panel">
+  <div class="panel-head">
+    <h2>试卷列表</h2>
+    <span class="muted">共 {{ papers|length }} 份</span>
+  </div>
+  <table class="paper-list">
+    <thead><tr><th>试卷</th><th>题目</th><th>操作</th></tr></thead>
+    <tbody>
+      {% for paper in papers %}
+      <tr>
+        <td>
+          <strong>{{ paper.title }}</strong>
+          <div class="muted small">{{ paper.created_at }} · {{ paper.problem_count }} 题</div>
+        </td>
+        <td>
+          {% for problem in paper.problems %}
+          <div class="small"><code>{{ problem.id }}</code> {{ problem.title }}</div>
+          {% else %}
+          <span class="muted">空试卷</span>
+          {% endfor %}
+        </td>
+        <td><button type="button" class="link-button danger" data-delete-paper="{{ paper.id }}">删除</button></td>
+      </tr>
+      {% else %}
+      <tr><td colspan="3" class="empty">还没有试卷。</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='teacher-papers.js') }}?v=2"></script>
+{% endblock %}
